@@ -6,8 +6,9 @@ dep = range(781)
 other = range(824)
 
 ## create depress_output.txt
+c = 1
 for corp in dep:
-	print('<comment date-time="2011-08-15 03:36 PM EDT" parent-url="1" parent-id="1" url="2">',file = log1)
+	print('<comment date-time="2011-08-15 03:36 PM EDT" parent-url="%d" parent-id="%d" url="%d">' % (c,c,c+1),file = log1)
 	print("<user>dep_corpus_%d</user>" % dep[corp], file = log1)
 	direc = "/Users/jchazin/Columbia/Capstone/mental_health_NYC/depress_corpus/corpus_%d" % corp
 	x_file = open(direc)
@@ -16,11 +17,13 @@ for corp in dep:
 		print(line,file=log1)
 	print("</text>",file = log1)
 	print("</comment>",file = log1)
+	c += 1
 
 
 ## create other_output.txt
+c = 1
 for corp in other:
-	print('<comment date-time="2011-08-15 03:36 PM EDT" parent-url="1" parent-id="1" url="2">',file = log2)
+	print('<comment date-time="2011-08-15 03:36 PM EDT" parent-url="%d" parent-id="%d" url="%d">'% (c,c,c+1),file = log2)
 	print("<user>dep_corpus_%d</user>" % other[corp], file = log2)
 	direc = "/Users/jchazin/Columbia/Capstone/mental_health_NYC/other_corpus/corpus_%d" % corp
 	x_file = open(direc)
@@ -29,4 +32,6 @@ for corp in other:
 		print(line,file=log2)
 	print("</text>",file = log2)
 	print("</comment>",file = log2)
+	c += 1
+	
 	
