@@ -1,0 +1,124 @@
+---
+title: "Mongo EDA"
+output: html_document
+---
+
+Load Things
+
+```{r}
+library(data.table)
+library(RMongo)
+library(splitstackshape)
+library(lubridate)
+```
+
+DB connection
+
+```{r}
+dbcon <- mongoDbConnect("twitter_final", host='ec2-54-147-125-234.compute-1.amazonaws.com:27017', port=27017)
+dbShowCollections(dbcon)
+```
+
+Clean up smallest dataset
+
+
+```{r}
+nyc.dep <- dbGetQuery(dbcon, 'tweets2', "{}",skip=0, limit=1000000)
+#lets only deal with english posts that were parsed correctly
+nyc.dep2 <- as.data.table(nyc.dep)[lang=="en"]
+#so basically possibly sensive comes up when people say where they are
+(nyc.dep2[possibly_sensitive=="true"]$text)
+#make lat/long numeric
+nyc.dep2$coordinates2 <- gsub(" ", "", gsub("]}","",gsub(".*\\[", "", nyc.dep2$coordinates)))
+nyc.dep2 <- cSplit(nyc.dep2, "coordinates2", ",")
+#time created - apparently data.table and strptime are not friends...
+nyc.dep2 <- as.data.frame(nyc.dep2)
+nyc.dep2$created_at2 <- c(strptime(nyc.dep2$created_at, "%a %b %d %H:%M:%S %z %Y", tz = "GMT") )
+saveRDS(nyc.dep2[,c(8,34:36,19)], "nyc.dep.RDS")
+
+```
+
+Others. Lets be sloppy because otherwise shit crashes
+
+```{r}
+
+nyc <- dbGetQuery(dbcon, 'tweets', "{}",skip=0, limit=10000)
+nyc.dep2 <- as.data.table(nyc)[lang=="en"]
+nyc.dep2$coordinates2 <- gsub(" ", "", gsub("]}","",gsub(".*\\[", "", nyc.dep2$coordinates)))
+nyc.dep2 <- cSplit(nyc.dep2, "coordinates2", ",")
+nyc.dep2 <- as.data.frame(nyc.dep2)
+nyc.dep2$created_at2 <- c(strptime(nyc.dep2$created_at, "%a %b %d %H:%M:%S %z %Y", tz = "GMT") )
+saveRDS(nyc.dep2[,c(8,34:36,19)], "nyc1.RDS")
+
+nyc <- dbGetQuery(dbcon, 'tweets', "{}",skip=10000, limit=10000)
+nyc.dep2 <- as.data.table(nyc)[lang=="en"]
+nyc.dep2$coordinates2 <- gsub(" ", "", gsub("]}","",gsub(".*\\[", "", nyc.dep2$coordinates)))
+nyc.dep2 <- cSplit(nyc.dep2, "coordinates2", ",")
+nyc.dep2 <- as.data.frame(nyc.dep2)
+nyc.dep2$created_at2 <- c(strptime(nyc.dep2$created_at, "%a %b %d %H:%M:%S %z %Y", tz = "GMT") )
+saveRDS(nyc.dep2[,c(8,34:36,19)], "nyc2.RDS")
+
+nyc <- dbGetQuery(dbcon, 'tweets', "{}",skip=20000, limit=10000)
+nyc.dep2 <- as.data.table(nyc)[lang=="en"]
+nyc.dep2$coordinates2 <- gsub(" ", "", gsub("]}","",gsub(".*\\[", "", nyc.dep2$coordinates)))
+nyc.dep2 <- cSplit(nyc.dep2, "coordinates2", ",")
+nyc.dep2 <- as.data.frame(nyc.dep2)
+nyc.dep2$created_at2 <- c(strptime(nyc.dep2$created_at, "%a %b %d %H:%M:%S %z %Y", tz = "GMT") )
+saveRDS(nyc.dep2[,c(8,34:36,19)], "nyc3.RDS")
+nyc <- dbGetQuery(dbcon, 'tweets', "{}",skip=30000, limit=10000)
+nyc.dep2 <- as.data.table(nyc)[lang=="en"]
+nyc.dep2$coordinates2 <- gsub(" ", "", gsub("]}","",gsub(".*\\[", "", nyc.dep2$coordinates)))
+nyc.dep2 <- cSplit(nyc.dep2, "coordinates2", ",")
+nyc.dep2 <- as.data.frame(nyc.dep2)
+nyc.dep2$created_at2 <- c(strptime(nyc.dep2$created_at, "%a %b %d %H:%M:%S %z %Y", tz = "GMT") )
+saveRDS(nyc.dep2[,c(8,34:36,19)], "nyc4.RDS")
+
+```
+
+Because I'm too lazy to figure out how to query mongo
+
+```{r}
+
+for(i in 3:44){
+  
+  nyc <- dbGetQuery(dbcon, 'tweets3', "{}",skip=(i-1)*10000, limit=i*10000)
+  nyc.dep2 <- as.data.table(nyc)[lang=="en"]
+  nyc.dep2$coordinates2 <- gsub(" ", "", gsub("]}","",gsub(".*\\[", "", nyc.dep2$coordinates)))
+  nyc.dep2 <- cSplit(nyc.dep2, "coordinates2", ",")
+  nyc.dep2 <- as.data.frame(nyc.dep2)
+  nyc.dep2$created_at2 <- c(strptime(nyc.dep2$created_at, "%a %b %d %H:%M:%S %z %Y", tz = "GMT") )
+  fName<-paste0("all_dep_", i, ".RDS")
+  saveRDS(nyc.dep2[,c(8,34:36,19)], fName)
+}
+
+for(i in 1:48){
+  
+  nyc <- dbGetQuery(dbcon, 'tweets4', "{}",skip=(i-1)*10000, limit=i*10000)
+  nyc.dep2 <- as.data.table(nyc)[lang=="en"]
+  nyc.dep2$coordinates2 <- gsub(" ", "", gsub("]}","",gsub(".*\\[", "", nyc.dep2$coordinates)))
+  nyc.dep2 <- cSplit(nyc.dep2, "coordinates2", ",")
+  nyc.dep2 <- as.data.frame(nyc.dep2)
+  nyc.dep2$created_at2 <- c(strptime(nyc.dep2$created_at, "%a %b %d %H:%M:%S %z %Y", tz = "GMT") )
+  fName<-paste0("us_", i, ".RDS")
+  saveRDS(nyc.dep2[,c(8,34:36,19)], fName)
+}
+
+nyc <- dbGetQuery(dbcon, 'tweets', "{}",skip=0, limit=10000)
+nyc.dep2 <- as.data.table(nyc)[lang=="en"]
+nyc.dep2$coordinates2 <- gsub(" ", "", gsub("]}","",gsub(".*\\[", "", nyc.dep2$coordinates)))
+nyc.dep2 <- cSplit(nyc.dep2, "coordinates2", ",")
+nyc.dep2 <- as.data.frame(nyc.dep2)
+nyc.dep2$created_at2 <- c(strptime(nyc.dep2$created_at, "%a %b %d %H:%M:%S %z %Y", tz = "GMT") )
+saveRDS(nyc.dep2[,c(8,34:36,19)], "nyc1.RDS")
+
+nyc <- dbGetQuery(dbcon, 'tweets', "{}",skip=10000, limit=10000)
+nyc.dep2 <- as.data.table(nyc)[lang=="en"]
+nyc.dep2$coordinates2 <- gsub(" ", "", gsub("]}","",gsub(".*\\[", "", nyc.dep2$coordinates)))
+nyc.dep2 <- cSplit(nyc.dep2, "coordinates2", ",")
+nyc.dep2 <- as.data.frame(nyc.dep2)
+nyc.dep2$created_at2 <- c(strptime(nyc.dep2$created_at, "%a %b %d %H:%M:%S %z %Y", tz = "GMT") )
+saveRDS(nyc.dep2[,c(8,34:36,19)], "nyc2.RDS")
+
+
+
+```
