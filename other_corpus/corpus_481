@@ -1,0 +1,4 @@
+The formula for the critical angle is
+Arcsin(n2/n1), and as sin only takes values from 1 to -1, n2 always has to be smaller for it to work.
+Is it impossible for it to occur if n2 is greater, if so why?
+Or is there a different formula.
