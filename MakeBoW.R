@@ -30,7 +30,7 @@
 
 
 
-
+library(data.table)
 library(tm)
 
 control <- Corpus(DirSource("other_corpus/"))
@@ -64,4 +64,4 @@ bow_metadata[which(bow_metadata$corpus %like% "dep"),]$subreddit_class <- "Depre
 ages <- read.csv("Age_tagged_corpora.csv")
 bow_metadata<- as.data.table(merge(bow_metadata, ages, by="corpus", all.x=TRUE))
 
-saveRDS( "RandomForestR/dictionary.RDS", list(dictionary= dtms$dimnames$Terms, controlList=list(removePunctuation = TRUE, removeNumbers=TRUE, tolower=FALSE, stopwords = TRUE)))
+saveRDS( list(dictionary= dtms$dimnames$Terms, removePunctuation = TRUE, removeNumbers=TRUE, tolower=FALSE, stopwords = TRUE), "dictionary.RDS")
