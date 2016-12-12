@@ -1,0 +1,50 @@
+---
+title: "Untitled"
+author: "Maura Fitzgerald"
+date: "November 28, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load things
+
+```{r}
+library(data.table)
+library(ggmap)
+library(rMaps)
+
+```
+
+Read in Data (prepped)
+
+```{r}
+nyc.dep <- readRDS("nyc.dep.RDS")
+nyc.dep$coordinates2_1 <- as.numeric(nyc.dep$coordinates2_1)
+nyc.dep$coordinates2_2 <- as.numeric(nyc.dep$coordinates2_2)
+nyc.dep <- as.data.table(nyc.dep)
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+map <- Leaflet$new()
+map$setView(c(40.74, -73.94), zoom = 8)
+map$tileLayer(provider = 'OpenStreetMap')
+for(i in 1:length(nyc.dep$id)){
+  map$marker(
+    c(nyc.dep$coordinates2_2[i], nyc.dep$coordinates2_1[i]),
+    bindPopup = nyc.dep$text[i]
+  )
+}
+
+map
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
