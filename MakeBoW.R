@@ -50,8 +50,8 @@ p_corp <- c(control, depressed, motivate, newyork)
 dtm <- DocumentTermMatrix(p_corp, control=list(removePunctuation = TRUE, removeNumbers=TRUE, tolower=TRUE, stopwords = TRUE, stemDocument = TRUE))
 dtm$dimnames$Terms
 
-#dtms <- removeSparseTerms(dtm, 0.997)
-dtms <- dtm
+dtms <- removeSparseTerms(dtm, 0.995)
+#dtms <- dtm
 
 bow <- (as.matrix(dtms)) 
 dim(bow)
@@ -79,9 +79,17 @@ head(components$x[,1:500])
 
 saveRDS(components,"PCA.RDS")
 
-comp <- predict(components, bow)[,1:1000]
+comp <- as.data.frame(predict(components, bow))[,1:300]
 comp$isdep <- factor(bow_metadata$subreddit_class)
 
 mylogit <- glm(isdep ~ ., data = comp, family = "binomial")
-bow2<-as.data.frame(bow)
-summary(bow)
+summary(mylogit)
+#bow2<-as.data.frame(bow)
+
+saveRDS(mylogit, "LogReg.RDS")
+
+comp2 <- as.data.frame(predict(components, bow[1101:1110,]))[,1:300]
+round(1- predict(mylogit,comp2, type="response"),2)
+
+library(e1071)
+nb <- naiveBayes(isdep ~ .*., data = comp)
